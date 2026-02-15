@@ -9,7 +9,7 @@ const saveRoutes = require("./routes/saveRoutes");
 const app = express();
 
 /* =======================
-   CORS — PRODUCTION SAFE
+   CORS — FIXED
    ======================= */
 app.use(
   cors({
@@ -23,7 +23,8 @@ app.use(
   })
 );
 
-// ❌ REMOVE app.options("*", cors());
+// ✅ THIS LINE FIXES THE ERROR
+app.options("/api/*", cors());
 
 app.use(express.json());
 
