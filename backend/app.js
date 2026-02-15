@@ -9,7 +9,7 @@ const saveRoutes = require("./routes/saveRoutes");
 const app = express();
 
 app.use(cors({
-  origin: "https://vital-wellness.vercel.app/",
+  origin: "https://vital-wellness.vercel.app",
   credentials: true
 }));
 
