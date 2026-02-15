@@ -24,7 +24,7 @@ BACKEND_URL = "https://vital-wellness.onrender.com"  # Change if your backend ru
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://vital-wellness.vercel.app/"],
+    allow_origins=["https://vital-wellness.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
