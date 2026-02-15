@@ -9,7 +9,7 @@ const saveRoutes = require("./routes/saveRoutes");
 const app = express();
 
 /* =======================
-   CORS — FIXED
+   CORS — FINAL, STABLE
    ======================= */
 app.use(
   cors({
@@ -23,8 +23,8 @@ app.use(
   })
 );
 
-// ✅ THIS LINE FIXES THE ERROR
-app.options("/api/*", cors());
+// ✅ ONLY VALID WAY ON NODE 22
+app.options(/.*/, cors());
 
 app.use(express.json());
 
