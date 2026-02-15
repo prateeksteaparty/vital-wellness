@@ -16,7 +16,7 @@ import copy
 nltk.download("wordnet")
 
 # Configuration
-BACKEND_URL = "https://vital-wellness.onrender.com/api"  # Change if your backend runs on different port
+BACKEND_URL = "https://vital-wellness.onrender.com"  # Change if your backend runs on different port
 
 # -----------------------------
 # App Setup
