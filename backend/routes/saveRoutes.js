@@ -113,7 +113,7 @@ setTimeout(async () => {
           </p>
 
           <a
-            href="http://localhost:5173/recommendations"
+            href="https://vital-wellness.vercel.app/recommendations"
             style="
               display: inline-block;
               padding: 10px 16px;
