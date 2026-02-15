@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://vital-backend-q28o.onrender.com/api",
+  baseURL: "https://vital-wellness.onrender.com/api",
   withCredentials: true
 });
 
