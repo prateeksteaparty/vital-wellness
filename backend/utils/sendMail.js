@@ -1,23 +1,19 @@
-const sgMail = require("@sendgrid/mail");
+const { Resend } = require("resend");
 
-// set API key once at startup
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendMail = async ({ to, subject, html }) => {
   try {
-    await sgMail.send({
+    const response = await resend.emails.send({
+      from: process.env.MAIL_FROM,
       to,
-      from: process.env.FROM_EMAIL, // must be verified in SendGrid
       subject,
       html
     });
 
-    console.log("✅ Email sent to:", to);
+    console.log("✅ Email sent:", response.id);
   } catch (err) {
-    console.error(
-      "❌ Email send failed:",
-      err.response?.body || err.message
-    );
+    console.error("❌ Resend email error:", err);
     throw err;
   }
 };
