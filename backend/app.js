@@ -8,13 +8,29 @@ const saveRoutes = require("./routes/saveRoutes");
 
 const app = express();
 
-app.use(cors({
-  origin: "https://vital-wellness.vercel.app",
-  credentials: true
-}));
+/* =======================
+   CORS — PRODUCTION SAFE
+   ======================= */
+app.use(
+  cors({
+    origin: [
+      "https://vital-wellness.vercel.app", // Vercel frontend
+      "http://localhost:5173"              // Local dev
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
+
+// IMPORTANT: allow preflight requests
+app.options("*", cors());
 
 app.use(express.json());
 
+/* =======================
+   ROUTES
+   ======================= */
 app.use("/api/user", userDetailRoute);
 app.use("/api", issueRoutes);
 app.use("/api", feedbackRoute);
