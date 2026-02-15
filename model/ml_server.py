@@ -16,7 +16,7 @@ import copy
 nltk.download("wordnet")
 
 # Configuration
-BACKEND_URL = "http://localhost:5000"  # Change if your backend runs on different port
+BACKEND_URL = "https://vital-wellness.onrender.com"  # Change if your backend runs on different port
 
 # -----------------------------
 # App Setup
@@ -24,7 +24,7 @@ BACKEND_URL = "http://localhost:5000"  # Change if your backend runs on differen
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["https://vital-wellness.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

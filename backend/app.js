@@ -9,7 +9,7 @@ const saveRoutes = require("./routes/saveRoutes");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://vital-wellness.vercel.app/",
   credentials: true
 }));
 
