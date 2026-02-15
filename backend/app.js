@@ -14,8 +14,8 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://vital-wellness.vercel.app", // Vercel frontend
-      "http://localhost:5173"              // Local dev
+      "https://vital-wellness.vercel.app",
+      "http://localhost:5173"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -23,8 +23,7 @@ app.use(
   })
 );
 
-// IMPORTANT: allow preflight requests
-app.options("*", cors());
+// ❌ REMOVE app.options("*", cors());
 
 app.use(express.json());
 
