@@ -13,7 +13,7 @@ router.post("/issues", async (req, res) => {
 
     // ✅ Make sure userDetails includes userId
     const mlResponse = await axios.post(
-      "https://vital-wellness-1.onrender.com/predict",
+      "http://model:8000/predict",
       {
         text,
         userDetails: {
