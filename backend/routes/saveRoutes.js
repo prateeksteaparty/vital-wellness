@@ -111,22 +111,21 @@ router.post("/save", async (req, res) => {
               <p>
                 👉 You can give feedback anytime to help us improve future suggestions.
               </p>
-
-              <a
-                href="http://192.168.29.235:5173/"
-                style="
-                  display: inline-block;
-                  padding: 10px 16px;
-                  background: #10b981;
-                  color: white;
-                  text-decoration: none;
-                  border-radius: 6px;
-                  margin: 12px 0;
-                  font-weight: bold;
-                "
-              >
-                View & Give Feedback
-              </a>
+          <a
+            href="https://vital-wellness.vercel.app/signin"
+            style="
+              display: inline-block;
+              padding: 10px 16px;
+              background: #10b981;
+              color: white;
+              text-decoration: none;
+              border-radius: 6px;
+              margin: 12px 0;
+              font-weight: bold;
+            "
+          >
+            View & Give Feedback
+          </a>
 
               <p style="font-size: 12px; color: #555; margin-top: 24px;">
                 This is a wellness support summary, not a medical diagnosis.
