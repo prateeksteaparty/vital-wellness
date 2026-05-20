@@ -11,22 +11,22 @@
 
 **Vital – Smart Supplement & Nutrition Recommendation System** is an AI-powered web application developed to provide personalized supplement and nutrition recommendations based on user health conditions, lifestyle, allergies, dietary preferences, and wellness goals.
 
-The system combines **Machine Learning (ML)** and **Natural Language Processing (NLP)** techniques to analyze user symptoms entered in natural language and generate intelligent recommendations.
+The system uses **Machine Learning (ML)** and **Natural Language Processing (NLP)** techniques to analyze user symptoms entered in natural language and generate intelligent recommendations.
 
-This project was developed as a **Final Year Bachelor of Engineering Project** for the Department of Computer Engineering under Savitribai Phule Pune University.
+This project was developed as a **Final Year Bachelor of Engineering Project** under the Department of Computer Engineering, Savitribai Phule Pune University.
 
 ---
 
 # 🎯 Objectives
 
-The primary objectives of the project are:
+The main objectives of the project are:
 
-- To provide personalized supplement and nutrition recommendations
-- To process free-text symptom descriptions using NLP
-- To implement TF-IDF vectorization and cosine similarity
-- To apply allergy and diet-based safety filtering
-- To improve recommendations using feedback mechanisms
-- To build a scalable AI-based healthcare recommendation platform
+- Provide personalized supplement and nutrition recommendations
+- Process free-text symptoms using NLP
+- Implement TF-IDF vectorization and cosine similarity
+- Apply allergy and diet-based safety filtering
+- Improve recommendations using feedback mechanisms
+- Build a scalable AI-powered healthcare recommendation platform
 
 ---
 
@@ -39,24 +39,29 @@ The primary objectives of the project are:
 - Symptom Input in Natural Language
 - Personalized Recommendation Generation
 - Saved Recommendations
+- Recommendation History
 - Feedback Submission
-- Recommendation History Tracking
+
+---
 
 ## ✅ AI & ML Features
 
-- NLP-based text preprocessing
+- NLP-based Text Processing
 - TF-IDF Vectorization
 - Cosine Similarity Matching
 - Rule-Based Safety Filtering
 - Feedback-Based Recommendation Adjustment
-- Personalized Ranking System
+- Personalized Recommendation Ranking
+
+---
 
 ## ✅ System Features
 
 - REST API Architecture
 - Secure MongoDB Storage
 - FastAPI ML Service
-- Responsive UI using TailwindCSS
+- Responsive UI with TailwindCSS
+- Dockerized Deployment
 - Modular Full-Stack Architecture
 
 ---
@@ -70,6 +75,7 @@ The primary objectives of the project are:
 | Machine Learning | Python, FastAPI |
 | Database | MongoDB Atlas |
 | NLP Techniques | TF-IDF, Cosine Similarity |
+| Deployment | Docker, Docker Compose |
 | Version Control | Git & GitHub |
 | API Testing | Postman |
 
@@ -77,69 +83,50 @@ The primary objectives of the project are:
 
 # 🏗️ System Architecture
 
-The system follows a **Three-Tier Architecture**:
+The project follows a **Three-Tier Architecture**:
 
 ```text
-Frontend (React.js)
-        ↓
+Frontend (React.js + Vite)
+            ↓
 Backend API (Node.js + Express.js)
-        ↓
-ML Recommendation Engine (FastAPI + Python)
-        ↓
+            ↓
+ML Recommendation Service (FastAPI + Python)
+            ↓
 MongoDB Atlas Database
 ```
 
-## Architecture Modules
-
-### 1. Frontend Layer
-- User interaction
-- Symptom forms
-- Recommendation dashboard
-
-### 2. Backend Layer
-- Authentication
-- API communication
-- Data handling
-
-### 3. Machine Learning Layer
-- NLP preprocessing
-- Similarity computation
-- Recommendation ranking
-
-### 4. Database Layer
-- User profiles
-- Feedback storage
-- Saved recommendations
-
 ---
 
-# ⚙️ Working Process
+# ⚙️ Workflow
 
-## Step-by-Step Workflow
+## System Execution Flow
 
-1. User logs into the system
+1. User logs into the platform
 2. User enters symptoms and health details
-3. Backend sends data to FastAPI service
-4. NLP preprocessing is applied
-5. TF-IDF vectors are generated
-6. Cosine similarity is calculated
-7. Diet and allergy filters are applied
-8. Feedback adjustment modifies ranking
-9. Top recommendations are returned
-10. Results are stored in MongoDB
-11. Recommendations are displayed to user
+3. Frontend sends data to backend API
+4. Backend forwards request to FastAPI ML service
+5. NLP preprocessing is performed
+6. TF-IDF vectors are generated
+7. Cosine similarity is calculated
+8. Diet and allergy filters are applied
+9. Feedback adjustment modifies scores
+10. Top recommendations are generated
+11. Results are stored in MongoDB
+12. Final recommendations are displayed to the user
 
 ---
 
 # 🔬 Machine Learning & NLP
 
-## Text Processing Pipeline
+## NLP Pipeline
 
 - Text Normalization
 - Tokenization
 - Synonym Expansion
 - TF-IDF Vectorization
 - Cosine Similarity Matching
+
+---
 
 ## Recommendation Formula
 
@@ -150,66 +137,154 @@ Score =
 0.15 × (DietScore × AllergyScore)
 ```
 
-The final recommendation score is adjusted using:
+The final recommendation score is further adjusted using:
+
 - User feedback
-- Dietary preferences
 - Allergy constraints
-
----
-
-# 🗂️ Database Collections
-
-## users
-Stores:
-- Name
-- Email
-- Gender
-- Diet Preference
-- Allergies
-
-## savedrecommendations
-Stores:
-- User recommendations
-- Confidence scores
-- Recommendation history
-
-## feedbacks
-Stores:
-- User feedback
-- Score adjustments
-- Learning improvements
+- Dietary preferences
 
 ---
 
 # 📂 Project Structure
 
 ```bash
-Vital/
-│
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── assets/
+Vital-Smart-Supplement-Recommendation-System/
 │
 ├── backend/
 │   ├── models/
 │   ├── routes/
 │   ├── controllers/
-│   └── server.js
+│   ├── middleware/
+│   ├── config/
+│   ├── utils/
+│   ├── server.js
+│   └── .env
 │
-├── ml-service/
+├── frontend/
+│   └── vite-project/
+│       ├── src/
+│       │   ├── components/
+│       │   ├── pages/
+│       │   ├── assets/
+│       │   ├── App.jsx
+│       │   └── main.jsx
+│       │
+│       ├── public/
+│       ├── package.json
+│       ├── vite.config.js
+│       └── tailwind.config.js
+│
+├── model/
 │   ├── ml_server.py
 │   ├── recommendation_engine.py
-│   └── datasets/
+│   ├── requirements.txt
+│   ├── datasets/
+│   └── trained_models/
 │
-├── database/
-│
-├── screenshots/
-│
+├── .gitignore
 ├── README.md
-└── package.json
+├── docker-compose.yml
+└── runtime.txt
 ```
+
+---
+
+# 📌 Folder Description
+
+## 🔹 backend/
+
+Contains backend server logic built using:
+
+- Node.js
+- Express.js
+
+Responsibilities:
+
+- API Routes
+- Authentication
+- Database Communication
+- User Management
+- Recommendation APIs
+
+---
+
+## 🔹 frontend/vite-project/
+
+Contains frontend application built using:
+
+- React.js
+- Vite
+- TailwindCSS
+
+Responsibilities:
+
+- User Interface
+- Forms & Inputs
+- Dashboard
+- Recommendation Display
+
+---
+
+## 🔹 model/
+
+Contains Machine Learning & NLP recommendation engine built using:
+
+- Python
+- FastAPI
+- TF-IDF
+- Cosine Similarity
+
+Responsibilities:
+
+- Symptom Processing
+- Recommendation Generation
+- Similarity Computation
+- NLP Operations
+
+---
+
+## 🔹 docker-compose.yml
+
+Used for containerized deployment of frontend, backend, and ML services.
+
+---
+
+## 🔹 runtime.txt
+
+Specifies runtime environment version for deployment platforms.
+
+---
+
+# 🗂️ Database Collections
+
+## users
+
+Stores:
+
+- User profile information
+- Gender
+- Allergies
+- Diet preferences
+
+---
+
+## savedrecommendations
+
+Stores:
+
+- Generated recommendations
+- Confidence scores
+- Recommendation history
+
+---
+
+## feedbacks
+
+Stores:
+
+- User feedback
+- Recommendation adjustments
+- Learning improvements
 
 ---
 
@@ -217,19 +292,20 @@ Vital/
 
 ## Prerequisites
 
-Make sure the following are installed:
+Install the following before setup:
 
 - Node.js
 - Python 3.x
-- MongoDB
+- MongoDB Atlas Account
 - Git
+- Docker (Optional)
 
 ---
 
 # ⚡ Frontend Setup
 
 ```bash
-cd frontend
+cd frontend/vite-project
 npm install
 npm run dev
 ```
@@ -261,7 +337,7 @@ http://localhost:3000
 # ⚡ ML Service Setup
 
 ```bash
-cd ml-service
+cd model
 pip install -r requirements.txt
 uvicorn ml_server:app --reload
 ```
@@ -276,12 +352,22 @@ http://localhost:8000
 
 # 🌐 Environment Variables
 
-Create a `.env` file inside backend directory.
+Create a `.env` file inside the backend folder.
 
 ```env
-MONGO_URI=your_mongodb_connection
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 ML_SERVICE_URL=http://localhost:8000
+```
+
+---
+
+# 🐳 Docker Deployment
+
+Run the complete project using Docker Compose:
+
+```bash
+docker-compose up --build
 ```
 
 ---
@@ -294,7 +380,7 @@ ML_SERVICE_URL=http://localhost:8000
 Fatigue, Weakness
 ```
 
-## Generated Recommendation
+## Generated Recommendations
 
 ```text
 - Iron
@@ -313,6 +399,8 @@ The project includes:
 - Functional Testing
 - Validation Testing
 - API Testing using Postman
+
+---
 
 ## Sample Test Cases
 
@@ -339,7 +427,7 @@ The project includes:
 
 - Wearable Device Integration
 - Real-Time Health Monitoring
-- Advanced Deep Learning Models
+- Deep Learning Recommendation Models
 - Voice-Based Symptom Input
 - Mobile Application
 - Doctor Consultation Integration
@@ -350,20 +438,22 @@ The project includes:
 
 This system is designed for educational and recommendation purposes only.
 
-It does **NOT** replace professional medical advice, diagnosis, or treatment. Users should consult healthcare professionals before taking supplements or making health decisions.
+It does **NOT** replace professional medical advice, diagnosis, or treatment. Users should consult healthcare professionals before taking supplements or making health-related decisions.
 
 ---
 
 # 👨‍💻 Authors
 
-### Project Team
+## Project Team
 
 - Pratik Shinde
 - Om Sonawane
 - Ankit Patil
 - Pankaj Binnar
 
-### Guide
+---
+
+## Project Guide
 
 **Prof. Anmol Budhewar**
 
@@ -374,7 +464,7 @@ Sandip Institute of Technology and Research Center, Nashik
 
 # 📚 References
 
-- Research papers on AI-based Nutrition Recommendation Systems
+- Research Papers on AI-based Nutrition Recommendation Systems
 - TF-IDF & Cosine Similarity Algorithms
 - FastAPI Documentation
 - MongoDB Atlas Documentation
@@ -384,9 +474,9 @@ Sandip Institute of Technology and Research Center, Nashik
 
 # ⭐ Conclusion
 
-The **Vital – Smart Supplement & Nutrition Recommendation System** successfully demonstrates the integration of Artificial Intelligence, Machine Learning, and Natural Language Processing in healthcare recommendation systems.
+The **Vital – Smart Supplement & Nutrition Recommendation System** demonstrates the integration of Artificial Intelligence, Machine Learning, and Natural Language Processing in healthcare recommendation systems.
 
-The platform provides personalized, intelligent, and safe supplement recommendations while maintaining scalability, usability, and modular architecture suitable for future expansion.
+The platform provides intelligent, personalized, and safe supplement recommendations while maintaining scalability, usability, and modular architecture suitable for future enhancements.
 
 ---
 
