@@ -13,7 +13,7 @@ const issueSchema = new mongoose.Schema(
       required: true,
     },
 
-    extractedSymptoms: [String], // optional later (nlp)
+    extractedSymptoms: [String], // optional later (nlp) -> didnt add it - _ -
 
     createdAt: {
       type: Date,

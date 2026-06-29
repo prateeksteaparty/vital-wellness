@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "ml_server.py"]
+CMD ["python", "vital_api_fixed.py"]

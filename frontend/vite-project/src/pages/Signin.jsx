@@ -130,7 +130,7 @@ navigate("/dashboard");
                 to="/forgot-password"
                 className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
               >
-                Forgot password?
+                Forgot password?signin
               </Link>
             </div>
 

@@ -5,3 +5,4 @@ numpy
 scikit-learn
 nltk
 requests
+openai>=1.0.0

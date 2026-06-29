@@ -112,7 +112,7 @@ router.post("/save", async (req, res) => {
                 👉 You can give feedback anytime to help us improve future suggestions.
               </p>
           <a
-            href="https://vital-wellness.vercel.app/signin"
+            href="http://localhost:5173/recommendations"
             style="
               display: inline-block;
               padding: 10px 16px;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
@@ -29,13 +29,58 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [showProfile, setShowProfile] = useState(true);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // ✅ FIX 1: Move navigate check to useEffect
+  // ── REF FOR AUTO-SCROLL ─────────────────────────────────────────────
+  const recommendationsRef = useRef(null);
+  // ────────────────────────────────────────────────────────────────────
+
+  // ── LOADING STATES ──────────────────────────────────────────────────
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0);
+  const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+
+  const LOADING_STEPS = [
+    "Analyzing symptoms...",
+    "Running NLP pipeline...",
+    "Matching nutritional patterns...",
+    "Applying safety filters...",
+    "Generating personalized recommendations...",
+  ];
+  // ────────────────────────────────────────────────────────────────────
+
+  // Navigate if not authenticated
   useEffect(() => {
     if (!auth) {
       navigate("/signin");
     }
   }, [auth, navigate]);
+
+  // Cycle loading text every 800ms
+  useEffect(() => {
+    if (!showLoadingOverlay) return;
+
+    setLoadingStepIndex(0);
+    const interval = setInterval(() => {
+      setLoadingStepIndex(prev =>
+        prev < LOADING_STEPS.length - 1 ? prev + 1 : prev
+      );
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, [showLoadingOverlay]);
+
+  // ── AUTO-SCROLL when recommendations appear ─────────────────────────
+  useEffect(() => {
+    if (showSuggestions && recommendations.length > 0 && recommendationsRef.current) {
+      setTimeout(() => {
+        recommendationsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100); // slight delay so the section has rendered
+    }
+  }, [showSuggestions, recommendations]);
+  // ────────────────────────────────────────────────────────────────────
 
   const quickSymptoms = [
     "Fatigue",
@@ -50,26 +95,52 @@ export default function Dashboard() {
     if (!issues.trim()) return;
 
     setIsLoading(true);
-    try {
-      const res = await API.post("/issues", {
-        text: issues,
-        userDetails: {
-          userId: auth.id,  // ✅ FIX 2: Add userId here!
-          gender: auth.gender,
-          dietPreference: auth.dietPreference,
-          lifestyle: auth.lifestyle,
-          allergies: auth.allergies || []
-        },
-        feedbacks: []
-      });
+    setShowLoadingOverlay(true);
+    setShowSuggestions(false);
 
-      setRecommendations(res.data.recommendations);
-      setShowSuggestions(true);
+    const minimumDelay = new Promise(resolve => setTimeout(resolve, 2500));
+
+    let apiResult = null;
+    let apiError = null;
+
+    try {
+      const [res] = await Promise.all([
+        API.post("/issues", {
+          text: issues,
+          userDetails: {
+            userId: auth.id,
+            gender: auth.gender,
+            dietPreference: auth.dietPreference,
+            lifestyle: auth.lifestyle,
+            allergies: auth.allergies || []
+          },
+          feedbacks: []
+        }),
+        minimumDelay
+      ]);
+      apiResult = res.data;
     } catch (err) {
       console.error("Recommendation error:", err);
-    } finally {
-      setIsLoading(false);
+      apiError = err;
     }
+
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    setShowLoadingOverlay(false);
+    setIsLoading(false);
+
+if (!apiError && apiResult) {
+
+  setMessage(apiResult.message || "");
+
+  if (apiResult.recommendations.length > 0) {
+    setRecommendations(apiResult.recommendations);
+    setShowSuggestions(true);
+  } else {
+    setRecommendations([]);
+    setShowSuggestions(false);
+  }
+}
   };
 
   const saveRecommendation = async (rec) => {
@@ -101,7 +172,6 @@ export default function Dashboard() {
     return "from-emerald-300 to-green-400";
   };
 
-  // ✅ FIX 3: Show loading while checking auth
   if (!auth) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
@@ -112,15 +182,95 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden">
-      
-      {/* Subtle animated background elements */}
+
+      {/* Premium AI Loading Overlay */}
+      {showLoadingOverlay && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            className="bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-3xl p-10 w-full max-w-sm mx-6 shadow-2xl text-center"
+            style={{ animation: "overlayIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both" }}
+          >
+            {/* Pulsing ring + spinner */}
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div
+                className="absolute inset-0 rounded-full border-2 border-emerald-400"
+                style={{ animation: "pulseRing 1.6s ease-out infinite" }}
+              />
+              <div
+                className="absolute inset-0 rounded-full border-2 border-teal-300 opacity-60"
+                style={{ animation: "pulseRing 1.6s ease-out 0.5s infinite" }}
+              />
+              <div className="absolute inset-2 rounded-full bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
+                <Loader2
+                  className="w-8 h-8 text-emerald-600"
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
+              </div>
+            </div>
+
+            {/* Badge */}
+            <p className="text-xs font-semibold tracking-widest text-emerald-600 uppercase mb-3">
+              AI Health Analysis
+            </p>
+
+            {/* Cycling step text */}
+            <div className="h-12 flex items-center justify-center overflow-hidden mb-4">
+              <p
+                key={loadingStepIndex}
+                className="text-base font-semibold text-slate-800"
+                style={{ animation: "stepFadeIn 0.4s ease-out both" }}
+              >
+                {LOADING_STEPS[loadingStepIndex]}
+              </p>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-5">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${((loadingStepIndex + 1) / LOADING_STEPS.length) * 100}%`
+                }}
+              />
+            </div>
+
+            {/* Bouncing dots */}
+            <div className="flex gap-1.5 justify-center mb-6">
+              {[0, 1, 2].map(i => (
+                <div
+                  key={i}
+                  className="w-2 h-2 rounded-full bg-emerald-400"
+                  style={{ animation: `dotBounce 1.2s ease-in-out ${i * 0.2}s infinite` }}
+                />
+              ))}
+            </div>
+
+            {/* Tag pills */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {["NLP Pipeline", "Safety Filters", "Pattern Matching"].map(tag => (
+                <span
+                  key={tag}
+                  className="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium border border-emerald-100"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-100/30 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-teal-100/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
       </div>
 
       {/* HEADER */}
-      <header className="border-b border-slate-200/60 bg-white/70 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+      <header className="border-b border-slate-200/60 bg-white/70 backdrop-blur-xl sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer group">
             <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
@@ -135,21 +285,21 @@ export default function Dashboard() {
           </div>
 
           <nav className="hidden md:flex gap-8 items-center">
-            <button 
+            <button
               onClick={() => navigate("/dashboard")}
               className="text-emerald-600 font-medium transition-colors duration-200 relative"
             >
               Dashboard
               <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-emerald-600"></span>
             </button>
-            <button 
+            <button
               onClick={() => navigate("/recommendations")}
               className="text-slate-700 hover:text-emerald-600 font-medium transition-colors duration-200 relative group"
             >
               My Recommendations
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-600 transition-all duration-300 group-hover:w-full"></span>
             </button>
-            <button 
+            <button
               onClick={() => navigate("/resources")}
               className="text-slate-700 hover:text-emerald-600 font-medium transition-colors duration-200 relative group"
             >
@@ -158,13 +308,13 @@ export default function Dashboard() {
             </button>
           </nav>
 
-          <button 
+          <button
             onClick={() => {
               localStorage.removeItem("auth");
               setAuth(null);
               resetUserDetails();
               navigate("/signin");
-            }} 
+            }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-600 transition-all font-medium shadow-sm hover:shadow-md transform hover:scale-105"
           >
             <LogOut className="w-4 h-4" /> Logout
@@ -186,11 +336,10 @@ export default function Dashboard() {
         <div className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-8 mb-10 shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-5">
-              {/* Avatar */}
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-md">
                 <span className="text-white text-2xl font-bold">{auth.name.charAt(0).toUpperCase()}</span>
               </div>
-              
+
               <div>
                 <p className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Welcome back</p>
                 <h2 className="text-3xl font-bold text-slate-900 mb-2">{auth.name}</h2>
@@ -200,8 +349,8 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setShowProfile(!showProfile)}
               className="p-2 hover:bg-slate-100 rounded-xl transition-all duration-200"
             >
@@ -219,7 +368,7 @@ export default function Dashboard() {
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Lifestyle</span>
                 <span className="text-sm font-medium text-slate-700">{auth.lifestyle}</span>
               </div>
-              
+
               <div className="p-3 rounded-xl bg-slate-50">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Allergies</span>
                 <span className="text-sm font-medium text-slate-700">{auth.allergies?.join(", ") || "None"}</span>
@@ -244,9 +393,9 @@ export default function Dashboard() {
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Quick Select</p>
             <div className="flex gap-2 flex-wrap">
               {quickSymptoms.map(s => (
-                <button 
-                  key={s} 
-                  onClick={() => addQuickSymptom(s)} 
+                <button
+                  key={s}
+                  onClick={() => addQuickSymptom(s)}
                   className="px-4 py-2.5 border-2 border-slate-200 bg-white hover:bg-emerald-50 hover:border-emerald-300 rounded-xl text-sm font-medium text-slate-700 transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                 >
                   {s}
@@ -273,10 +422,16 @@ export default function Dashboard() {
             )}
           </button>
         </div>
-
+            {message && (
+  <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+    <p className="text-amber-800 font-medium">
+      {message}
+    </p>
+  </div>
+)}
         {/* RESULTS */}
         {recommendations.length > 0 && showSuggestions && (
-          <div className="animate-fadeIn">
+          <div className="animate-fadeIn" ref={recommendationsRef}>
             <div className="flex items-center gap-3 mb-8">
               <div className="p-2 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl">
                 <Flame className="text-emerald-600 w-6 h-6" />
@@ -288,8 +443,8 @@ export default function Dashboard() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendations.map((rec, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-2xl p-7 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group animate-slideUp"
                   style={{ animationDelay: `${i * 100}ms` }}
                 >
@@ -298,16 +453,16 @@ export default function Dashboard() {
                       <h4 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-emerald-600 transition-colors duration-200">{rec.name}</h4>
                       <span className="inline-block px-2.5 py-1 text-xs uppercase font-bold text-emerald-700 bg-emerald-50 rounded-full tracking-wide">{rec.type}</span>
                     </div>
-                    <button 
+                    <button
                       onClick={() => saveRecommendation(rec)}
                       className="p-2 hover:bg-red-50 rounded-xl transition-all duration-200 transform hover:scale-110"
                     >
-                      <Heart 
+                      <Heart
                         className={`w-6 h-6 transition-all duration-300 ${
-                          savedMap[rec.name] 
-                            ? "fill-red-500 text-red-500 scale-110" 
+                          savedMap[rec.name]
+                            ? "fill-red-500 text-red-500 scale-110"
                             : "text-slate-300 hover:text-red-400"
-                        }`} 
+                        }`}
                       />
                     </button>
                   </div>
@@ -333,13 +488,13 @@ export default function Dashboard() {
                   </div>
 
                   {rec.citation && (
-                    <a 
-                      href={rec.citation} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={rec.citation}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors duration-200 group/link"
                     >
-                      View Research 
+                      View Research
                       <ExternalLink className="w-4 h-4 transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform duration-200" />
                     </a>
                   )}
@@ -353,35 +508,31 @@ export default function Dashboard() {
 
       <style jsx>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
+        @keyframes overlayIn {
+          from { opacity: 0; transform: scale(0.88) translateY(16px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
         }
-
-        .animate-slideUp {
-          animation: slideUp 0.5s ease-out forwards;
-          opacity: 0;
+        @keyframes pulseRing {
+          0%   { transform: scale(0.85); opacity: 0.7; }
+          100% { transform: scale(1.55); opacity: 0; }
         }
+        @keyframes stepFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes dotBounce {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
+          40%            { transform: scale(1);   opacity: 1; }
+        }
+        .animate-fadeIn  { animation: fadeIn 0.6s ease-out; }
+        .animate-slideUp { animation: slideUp 0.5s ease-out forwards; opacity: 0; }
       `}</style>
     </div>
   );

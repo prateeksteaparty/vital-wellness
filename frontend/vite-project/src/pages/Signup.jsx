@@ -55,7 +55,7 @@ function Signup() {
 
         await API.post("/user/signup", payload);
         resetUserDetails();
-      navigate("/dashboard");
+      navigate("/signin");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create account. Please try again.");
     } finally {
