@@ -13,7 +13,7 @@
 
 The system uses **Machine Learning (ML)** and **Natural Language Processing (NLP)** techniques to analyze user symptoms entered in natural language and generate intelligent recommendations.
 
-This project was developed as a **Final Year Bachelor of Engineering Project** under the Department of Computer Engineering, Savitribai Phule Pune University.
+This project was developed as a **Final Year Bachelor of Engineering Project** under the Department of Computer Engineering, Savitribai Phule Pune University..
 
 ---
 
