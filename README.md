@@ -53,9 +53,9 @@ The main objectives of the project are:
 - Feedback-Based Recommendation Adjustment
 - Personalized Recommendation Ranking
 
----
+----
 
-## ✅ System Features
+## ✅ System Features.
 
 - REST API Architecture
 - Secure MongoDB Storage
